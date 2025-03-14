@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
     return (
-        <div className="flex flex-col items-start justify-start bg-sodium-100]">
+        <div className="flex flex-col items-start justify-start bg-sodium-100 mt-[50px]">
             {/* 图片部分 */}
             <div className="">
                 <Image
@@ -19,7 +19,7 @@ export default function Home() {
                 <h2 className="mb-[-0.75rem] text-[64px] text-sodium-400 font-bold">缺陷检测</h2>
                 <p className="text-[36px] text-sodium-400">使用最新的人工智能技术对材料缺陷进行检测</p>
             </div>
-            {/* 上传按钮部分 */}
+            {/* 上传按钮部分 */}1
             <div className="m-2 w-full flex">
                 {/* 隐藏原生input */}
                 <input

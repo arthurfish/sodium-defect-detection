@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased flex-col pl-auto pr-auto pt-[50px] justify-items-center`}
+        className={`antialiased flex-col pl-auto pr-auto justify-items-center`}
       >
         {children}
       </body>

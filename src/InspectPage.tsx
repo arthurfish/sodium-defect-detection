@@ -8,8 +8,8 @@ interface Props {
 
 // 置信度颜色映射函数
 const getDefectColor = (confidence: number) => {
-    const hue = (1 - confidence) * 120; // 从红色(0)到绿色(120)
-    return `hsl(${hue}, 100%, 50%)`;
+    const hue = (1 - confidence) * 75; // 从红色(0)到绿色(120)
+    return `hsl(${hue}, 87%, 60%)`;
 };
 
 export default function InspectPage({ inspectState }: Props) {
@@ -34,23 +34,26 @@ export default function InspectPage({ inspectState }: Props) {
     };
 
     return (
-        <section className="bg-sodium-100 w-full flex flex-col items-center gap-4 pt-2">
+        <section className="bg-sodium-100 w-full flex flex-col items-center gap-4 p-6">
             <header className="w-full h-[37px] bg-sodium-200 rounded-full ml-4 mr-4" />
 
             <div className="flex w-full gap-4 pl-4 pr-4">
                 {/* 图像标注区域 */}
-                <div className="h-[500px] w-[800px] rounded-2xl inset-shadow-2xs bg-sodium-400">
+                <div className="h-[500px] w-[700px] rounded-2xl inset-shadow-2xs bg-sodium-400">
                     <Stage
-                        width={800}
+                        width={700}
                         height={500}
                         style={{ borderRadius: '1rem' }}
+                        className="rounded-2xl"
                     >
-                        <Layer>
+                        <Layer className="rounded-2xl">
                             <Image
+                                className="rounded-2xl"
                                 image={imgRef.current}
-                                width={800}
+                                width={700}
                                 height={500}
                                 listening={false}
+
                             />
 
                             {inspectState.defects.map((defect, index) => {
@@ -61,9 +64,9 @@ export default function InspectPage({ inspectState }: Props) {
                                 return (
                                     <Rect
                                         key={index}
-                                        x={x1 * 800 / imgSize.width}
+                                        x={x1 * 700 / imgSize.width}
                                         y={y1 * 500 / imgSize.height}
-                                        width={width * 800 / imgSize.width}
+                                        width={width * 700 / imgSize.width}
                                         height={height * 500 / imgSize.height}
                                         stroke={selectedDefect === index ? 'yellow' : getDefectColor(maxConf)}
                                         strokeWidth={selectedDefect === index ? 3 : 2}
@@ -83,7 +86,7 @@ export default function InspectPage({ inspectState }: Props) {
                         <p>检测结果</p>
                     </header>
 
-                    <div className="rounded-b-xl w-full overflow-y-scroll h-[90%]">
+                    <div className="rounded-b-xl w-full overflow-y-scroll h-[90%] bg-sodium-200">
                         {inspectState.defects.map((defect, index) => {
                             const [_, __, ___, ____, maxConf, ...classConfs] = defect;
                             const classes = ['缺陷A', '缺陷B', '缺陷C', '缺陷D'];
@@ -91,15 +94,15 @@ export default function InspectPage({ inspectState }: Props) {
                             return (
                                 <div
                                     key={index}
-                                    className={`grid-cols-6 border-b-2 border-b-sodium-400 flex flex-row justify-start items-center p-2 ${
+                                    className={`grid-cols-6 border-b-1 border-b-sodium-400 flex flex-row justify-start items-center p-2 ${
                                         selectedDefect === index ? 'bg-sodium-200' : ''
                                     }`}
                                     onClick={() => handleDefectClick(index)}
                                 >
                                     <svg width="50" height="50">
                                         <circle
-                                            cx="25"
-                                            cy="25"
+                                            cx="10"
+                                            cy="10"
                                             r="10"
                                             fill={getDefectColor(maxConf)}
                                         />

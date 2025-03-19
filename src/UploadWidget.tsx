@@ -24,9 +24,12 @@ export default function UploadWidget({setInspectState}: Props){
 
             if (!response.ok) throw new Error('处理失败');
 
-            // 解析响应数据
-            const { processed_image, coordinates } = await response.json();
 
+            // 解析响应数据
+            //console.log(`raw text: ${await response.text()}`);
+            const responseJson = await response.json();
+            const [processed_image, coordinates ] = [responseJson['image'], responseJson['defects']]
+            console.log(coordinates)
             // 调用外部传入的存储函数
             setInspectState({
                 image: processed_image,

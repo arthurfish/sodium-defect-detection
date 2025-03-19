@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# === Python 后端 ===
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 上传文件/模型文件
+/uploads/
+*.pt

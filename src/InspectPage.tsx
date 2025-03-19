@@ -12,8 +12,13 @@ const getDefectColor = (confidence: number) => {
     return `hsl(${hue}, 87%, 60%)`;
 };
 
+const imageDisplaySize: {width: number, height: number} = {
+    width: 700,
+    height: 500,
+}
+
 export default function InspectPage({ inspectState }: Props) {
-    const [imgSize, setImgSize] = useState({ width: 0, height: 0 });
+    const [imgSize, setImgSize] = useState({ width: 1960, height: 1080 });
     const [selectedDefect, setSelectedDefect] = useState<number | null>(null);
     const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -23,6 +28,7 @@ export default function InspectPage({ inspectState }: Props) {
         img.src = "data:image/png;base64,"+inspectState.image;
         img.onload = () => {
             setImgSize({ width: img.width, height: img.height });
+            console.log(`image size: width: ${img.width}px; height: ${img.height}px;`);
             imgRef.current = img;
         };
     }, [inspectState.image]);
@@ -33,41 +39,41 @@ export default function InspectPage({ inspectState }: Props) {
         // 可以在此处添加滚动到对应列表项的逻辑
     };
 
+    const scaleFactor: {x: number, y: number} = {x: imageDisplaySize.width / imgSize.width, y: imageDisplaySize.height / imgSize.height}
+
     return (
         <section className="bg-sodium-100 w-full flex flex-col items-center gap-4 p-6">
             <header className="w-full h-[37px] bg-sodium-200 rounded-full ml-4 mr-4" />
 
-            <div className="flex w-full gap-4 pl-4 pr-4">
+            <div className="flex w-full gap-4 pl-4 pr-4 justify-between">
                 {/* 图像标注区域 */}
                 <div className="h-[500px] w-[700px] rounded-2xl inset-shadow-2xs bg-sodium-400">
                     <Stage
-                        width={700}
-                        height={500}
+                        width={imageDisplaySize.width}
+                        height={imageDisplaySize.height}
                         style={{ borderRadius: '1rem' }}
                         className="rounded-2xl"
                     >
                         <Layer className="rounded-2xl">
                             <Image
+                                cornerRadius={16}
                                 className="rounded-2xl"
                                 image={imgRef.current}
-                                width={700}
-                                height={500}
+                                width={imageDisplaySize.width}
+                                height={imageDisplaySize.height}
                                 listening={false}
-
                             />
 
                             {inspectState.defects.map((defect, index) => {
-                                const [x1, y1, x2, y2, maxConf, ...classConfs] = defect;
-                                const width = x2 - x1;
-                                const height = y2 - y1;
-
+                                const [x, y, width, height, maxConf, ...classConfs] = defect;
+                                //console.log(x1, y1, x2, y2, maxConf, classConfs);
                                 return (
                                     <Rect
                                         key={index}
-                                        x={x1 * 700 / imgSize.width}
-                                        y={y1 * 500 / imgSize.height}
-                                        width={width * 700 / imgSize.width}
-                                        height={height * 500 / imgSize.height}
+                                        x={x * scaleFactor.x}
+                                        y={y * scaleFactor.y}
+                                        width={width * scaleFactor.x}
+                                        height={height * scaleFactor.y}
                                         stroke={selectedDefect === index ? 'yellow' : getDefectColor(maxConf)}
                                         strokeWidth={selectedDefect === index ? 3 : 2}
                                         opacity={0.8}
@@ -95,7 +101,7 @@ export default function InspectPage({ inspectState }: Props) {
                                 <div
                                     key={index}
                                     className={`grid-cols-6 border-b-1 border-b-sodium-400 flex flex-row justify-start items-center p-2 ${
-                                        selectedDefect === index ? 'bg-sodium-200' : ''
+                                        selectedDefect === index ? 'bg-sodium-300' : ''
                                     }`}
                                     onClick={() => handleDefectClick(index)}
                                 >

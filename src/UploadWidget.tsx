@@ -64,7 +64,7 @@ export default function UploadWidget({setInspectState}: Props){
                 className={`ml-auto flex items-center rounded-xl px-4 py-2 space-x-2 
           ${
                     isLoading
-                        ? 'bg-gray-400 cursor-not-allowed'
+                        ? 'bg-sodium-300 cursor-not-allowed'
                         : 'bg-sodium-400 hover:bg-sodium-300 cursor-pointer'
                 } 
           text-sodium-100`}

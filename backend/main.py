@@ -1,4 +1,7 @@
 import os
+import random
+import time
+
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import base64
@@ -23,6 +26,7 @@ app.add_middleware(
 
 # 加载YOLO模型（应用启动时加载一次）
 model = YOLO("best.pt")  # 确保模型文件路径正确
+model = model.to("cuda")
 
 
 def process_results(results):
@@ -83,6 +87,7 @@ async def upload_image(image: UploadFile = File(..., max_size=20 * 1024 * 1024))
 
         # 执行模型预测
         results = model.predict(temp_path, imgsz=640)
+        print("results", results)
         processed_data = process_results(results)
 
         # 清理临时文件
@@ -106,3 +111,46 @@ async def upload_image(image: UploadFile = File(..., max_size=20 * 1024 * 1024))
 
 
 # 运行命令：uvicorn main:app --reload --port 8000
+
+from fastapi import Body, HTTPException
+
+@app.post("/upload_blob")
+async def upload_image(
+    image_data: bytes = Body(..., media_type="application/octet-stream", max_length=20 * 1024 * 1024)
+):
+    start_time = time.time()
+    try:
+        # 验证是否有数据
+        if not image_data:
+            raise HTTPException(status_code=400, detail="未接收到数据")
+
+        # 验证文件类型（通过文件头）
+        # 例如：检查是否为 JPEG 或 PNG
+        file_header = image_data[:4]
+        if file_header not in [b"\xFF\xD8\xFF\xE0", b"\x89PNG"]:
+            raise HTTPException(status_code=400, detail="不支持的图片格式")
+
+        # 生成Base64字符串
+        image_base64 = base64.b64encode(image_data).decode("utf-8")
+
+        # 保存临时文件（可选）
+        temp_path = Path("uploads") / f"{random.randint(100, 10000000)}temp_image.jpg"
+        with temp_path.open("wb") as buffer:
+            buffer.write(image_data)
+
+        # 执行模型预测
+
+        results = model.predict(temp_path, imgsz=640)
+        print(f"results: {results}")
+        processed_data = process_results(results)
+
+        # 清理临时文件
+        temp_path.unlink()
+
+        end_time = time.time()
+        print("Time cost:", end_time - start_time)
+        return {"image": image_base64, "defects": processed_data}
+
+    except Exception as e:
+        print(f"处理文件时出错: {str(e)}")
+        raise HTTPException(status_code=500, detail="服务器内部错误")
